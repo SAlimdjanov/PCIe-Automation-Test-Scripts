@@ -1,7 +1,5 @@
 """
-detect_devices.py
-
-NOTE: For debugging purposes
+detect_pci_devices.py
 
 """
 
@@ -10,21 +8,24 @@ import pyudev
 
 def detect_pci_devices(devices: pyudev.Enumerator) -> None:
     """
-    Prints information about all devices currently connected to the computer
+    Prints information about PCI/PCIe devices currently connected to the
+    computer
 
     Args:
         devices (pyudev.Enumerator): Filtered iterable containing devices
     """
     for device in devices:
         device_info = {
+            "id": device.get("PCI_ID"),
             "manufacturer": device.get("ID_VENDOR_FROM_DATABASE"),
             "model": device.get("ID_MODEL_FROM_DATABASE"),
             "driver": device.driver,
             "path": device.device_path,
         }
         print("#" * 50)
-        print("Device Information:")
+        print("PCI/PCIe Device Info:")
         print("-" * 50)
+        print("ID: ", device_info["id"])
         print("Manufacturer: ", device_info["manufacturer"])
         print("Model: ", device_info["model"])
         print("Path: ", device_info["path"])
@@ -32,5 +33,5 @@ def detect_pci_devices(devices: pyudev.Enumerator) -> None:
 
 if __name__ == "__main__":
     context = pyudev.Context()
-    all_devices = context.list_devices()
-    detect_pci_devices(all_devices)
+    pci_devices = context.list_devices(subsystem="pci")
+    detect_pci_devices(pci_devices)
